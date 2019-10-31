@@ -1,12 +1,13 @@
 #include <iostream>
+#include <string>
 #include <vector>
 #include <opencv2/opencv.hpp>
 #include "dbscan.cpp"
 #include "customAdaptiveThreshold.cpp"
 
 // Shortcut of displaying image for debug
-void imshow(const cv::Mat &src) {
-    cv::imshow("img", src);
+void imshow(const cv::Mat &src, const std::string &winName = "img") {
+    cv::imshow(winName, src);
     cv::waitKey(0);
 }
 
@@ -20,10 +21,16 @@ void imshow(const cv::Mat &src) {
  * @param minLineSize the minimum number of points a valid laser must have. The invalid laser lines found by DBSCAN will
  *                    be skipped when locating end points.
  * @param debug if the function prints some debug information or not.
+ * @param lineAngle along with `delta`, `trunc` and `offset` are used in `customAdaptiveThreshold` which control the
+ *                  thresh process. DBSCAN algorithm depends on a good thresh.
+ * @param delta explained above.
+ * @param trunc explained above.
+ * @param offset explained above.
  */
 void
 extractEndPoints(const cv::Mat &src, std::vector<cv::Point> &endPoints, const int epsilon = 8, const int minPts = 5,
-                 const int minLineSize = 200, const bool debug = false) {
+                 const int minLineSize = 200, const bool debug = false, const double lineAngle = 0,
+                 const double delta = -20, const double trunc = 80, const int offset = 30) {
     // Timestamp for profiling.
     int64 ts = 0;
     // Make kernel for custom threshold
@@ -33,16 +40,18 @@ extractEndPoints(const cv::Mat &src, std::vector<cv::Point> &endPoints, const in
             kernel.at<float>(j, i) = -2. / 11. / 5.;
         }
     }
-    cv::Mat rotateMat = cv::getRotationMatrix2D(cv::Point2f(5, 5), -2, 1);
+    cv::Mat rotateMat = cv::getRotationMatrix2D(cv::Point2f(5, 5), lineAngle, 1);
     cv::warpAffine(kernel, kernel, rotateMat, kernel.size());
+    if (debug) std::cout << kernel;
     for (int j = 0; j < 11; j++) {
         for (int i = 0; i < 11; i++) {
             if (kernel.at<float>(j, i) > -0.0001) kernel.at<float>(j, i) = 3. / 11. / 6.;
         }
     }
+    if (debug) std::cout << kernel;
     if (debug) ts = cv::getTickCount();
     cv::Mat binary;
-    customAdaptiveThreshold(src, binary, 255, kernel, cv::THRESH_BINARY, -20);
+    customAdaptiveThreshold(src, binary, 255, kernel, cv::THRESH_BINARY, delta, trunc, offset);
     // Replace the previous line with the next one to compare it with standard adaptive threshold provided by OpenCV.
     // cv::adaptiveThreshold(src, binary, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 11, -40);
 

@@ -4,15 +4,14 @@ using namespace cv;
 
 // Adapted from OpenCV's adaptiveThreshold method.
 void customAdaptiveThreshold(InputArray _src, OutputArray _dst, double maxValue,
-                             InputArray _kernel, int type, double delta) {
+                             InputArray _kernel, int type, double delta, double trunc, int offset) {
 
     Mat src = _src.getMat().clone();
     CV_Assert(src.type() == CV_8UC1);
     CV_Assert(type == THRESH_BINARY || type == THRESH_BINARY_INV);
     Size size = src.size();
 
-    double truncMax = 80;
-    cv::threshold(src, src, truncMax, truncMax, cv::THRESH_TRUNC);
+    cv::threshold(src, src, trunc, trunc, cv::THRESH_TRUNC);
 
     _dst.create(size, src.type());
     Mat dst = _dst.getMat();
@@ -25,7 +24,6 @@ void customAdaptiveThreshold(InputArray _src, OutputArray _dst, double maxValue,
     Mat mean;
 
     Mat kernel = _kernel.getMat();
-    int offset = 30;
     filter2D(src, mean, src.type(), kernel, Point(-1, -1), offset);
 
     // std::cout << mean.colRange(0,1);

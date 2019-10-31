@@ -93,13 +93,13 @@ int main() {
         cv::Mat img = cv::imread(home + "/Downloads/Ims/有干扰~12ms/" + file, cv::IMREAD_GRAYSCALE);
 
         std::vector<cv::Point> endPoints;
-        extractEndPoints(img, endPoints, 8, 5, 200, debug);
+        extractEndPoints(img, endPoints, 4, 5, 200, debug, 2);
 
         if (debug) {
             for (auto &p: endPoints) {
                 cv::circle(img, p, 10, 255);
             }
-            imshow(img);
+            imshow(img, file);
         }
     }
     return 0;
