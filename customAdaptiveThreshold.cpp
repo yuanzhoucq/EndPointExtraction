@@ -21,12 +21,14 @@ void customAdaptiveThreshold(InputArray _src, OutputArray _dst, double maxValue,
         return;
     }
 
-    Mat mean;
-
+    Mat filtered;
     Mat kernel = _kernel.getMat();
-    filter2D(src, mean, src.type(), kernel, Point(-1, -1), offset);
+    filter2D(src, filtered, src.type(), kernel, Point(-1, -1), offset);
 
-    // std::cout << mean.colRange(0,1);
+    // imshow("filtered", filtered);
+    // waitKey(0);
+
+    // std::cout << filtered.colRange(0,1);
 
     int i, j;
     uchar imaxval = saturate_cast<uchar>(maxValue);
@@ -40,14 +42,14 @@ void customAdaptiveThreshold(InputArray _src, OutputArray _dst, double maxValue,
         for (i = 0; i < 768; i++)
             tab[i] = (uchar) (i - 255 <= -idelta ? imaxval : 0);
 
-    if (src.isContinuous() && mean.isContinuous() && dst.isContinuous()) {
+    if (src.isContinuous() && filtered.isContinuous() && dst.isContinuous()) {
         size.width *= size.height;
         size.height = 1;
     }
 
     for (i = 0; i < size.height; i++) {
         const uchar *sdata = src.ptr(i);
-        const uchar *mdata = mean.ptr(i);
+        const uchar *mdata = filtered.ptr(i);
         uchar *ddata = dst.ptr(i);
 
         for (j = 0; j < size.width; j++)

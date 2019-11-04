@@ -3,8 +3,8 @@
 #include "extractEndPoints.cpp"
 
 int main() {
-    std::vector<std::string> files{"2470.png", "2316.png", "2302.png", "2464.png", "2458.png", "2114.png", "2100.png",
-                                   "2128.png", "2060.png", "2074.png", "2048.png", "2289.png", "2504.png", "2262.png",
+    std::vector<std::string> files{"2470.png", "2316.png", "2074.png", "2289.png", "2302.png", "2464.png", "2458.png",
+                                   "2114.png", "2100.png","2128.png", "2060.png", "2048.png", "2504.png", "2262.png",
                                    "2276.png", "2510.png", "2538.png", "2539.png", "2277.png", "2511.png", "2505.png",
                                    "2263.png", "2288.png", "2049.png", "2075.png", "2061.png", "2129.png", "2101.png",
                                    "2115.png", "2459.png", "2303.png", "2465.png", "2471.png", "2317.png", "2498.png",
@@ -93,7 +93,7 @@ int main() {
         cv::Mat img = cv::imread(home + "/Downloads/Ims/有干扰~12ms/" + file, cv::IMREAD_GRAYSCALE);
 
         std::vector<cv::Point> endPoints;
-        extractEndPoints(img, endPoints, 4, 5, 200, debug, 2);
+        extractEndPoints(img, endPoints, 4, 5, 200, debug);
 
         if (debug) {
             for (auto &p: endPoints) {
